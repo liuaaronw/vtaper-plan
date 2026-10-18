@@ -1,0 +1,1131 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>V-Taper Home Plan</title></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one narrow training-log column; a rotation tracker up top, then the day cards, then reference sections */
+:root {
+  --bg: #eceff2;
+  --surface: #ffffff;
+  --ink: #161a1f;
+  --muted: #5a636e;
+  --line: #d3d8de;
+  --accent: #c94f12;
+  --accent-soft: #fbe7dc;
+  --good: #1f7a4a;
+  --good-soft: #dff1e6;
+  --bad: #b3261e;
+  --bad-soft: #f9e0de;
+  --display: "Barlow Condensed", "Arial Narrow", Arial, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", Consolas, monospace;
+  --m-off: #cdd3da;
+  --m-main: #c94f12;
+  --m-help: #f2b48f;
+  --scrim: rgba(22, 26, 31, .55);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111418; --surface: #1a1f25; --ink: #e8ebef; --muted: #9aa4b0; --line: #2c333c;
+    --accent: #ff8a4c; --accent-soft: #3a2418; --good: #6fd39b; --good-soft: #17301f;
+    --bad: #ff8a80; --bad-soft: #3a1c1a; color-scheme: dark;
+    --m-off: #303843; --m-main: #ff8a4c; --m-help: #8a5233; --scrim: rgba(0, 0, 0, .65);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111418; --surface: #1a1f25; --ink: #e8ebef; --muted: #9aa4b0; --line: #2c333c;
+  --accent: #ff8a4c; --accent-soft: #3a2418; --good: #6fd39b; --good-soft: #17301f;
+  --bad: #ff8a80; --bad-soft: #3a1c1a; color-scheme: dark;
+  --m-off: #303843; --m-main: #ff8a4c; --m-help: #8a5233; --scrim: rgba(0, 0, 0, .65);
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; display: grid; gap: 40px; }
+h1, h2, h3 { font-family: var(--display); text-transform: uppercase; letter-spacing: .02em; line-height: 1.05; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.4rem, 8vw, 3.6rem); }
+h2 { font-size: 1.9rem; }
+h3 { font-size: 1.3rem; }
+p { margin: 0; max-width: 65ch; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+section { display: grid; gap: 14px; }
+.lead { color: var(--muted); font-size: 1.05rem; }
+
+/* tracker */
+.tracker { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 14px; }
+.tracker-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.today-name { font-family: var(--display); font-size: 2rem; text-transform: uppercase; }
+.today-name span { color: var(--accent); }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+button { font: 600 .95rem var(--body); border-radius: 6px; padding: 9px 14px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.strip button { padding: 8px 2px; display: grid; gap: 2px; text-align: center; font-size: .8rem; }
+.strip button b { font-family: var(--display); font-size: 1.3rem; }
+.strip button[aria-current="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.strip button.viewing { outline: 2px solid var(--ink); outline-offset: -2px; }
+
+/* day card */
+.day { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 12px; }
+.day-head { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+.day-head .targets { color: var(--muted); }
+.ex { display: flex; gap: 12px; align-items: flex-start; padding-block: 12px; border-top: 1px solid var(--line); }
+.ex-text { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.ex-name { font-weight: 700; }
+.ex-dose { font-family: var(--mono); font-size: .85rem; color: var(--accent); }
+.ex-note { color: var(--muted); font-size: .95rem; }
+.ex-muscles { font-size: .88rem; }
+.ex-muscles b { color: var(--accent); font-weight: 600; }
+.ex-links { font-size: .9rem; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.body-map { flex: none; width: 148px; max-width: 42%; height: auto; }
+.body-map .m { fill: var(--m-off); }
+.body-map .m.main { fill: var(--m-main); }
+.body-map .m.help { fill: var(--m-help); }
+.body-map .skin { fill: var(--m-off); opacity: .6; }
+.body-map text { fill: var(--muted); font: 9px var(--body); }
+.tut-btn { padding: 4px 10px; font-size: .85rem; border-color: var(--accent); color: var(--accent); }
+.modal-back { position: fixed; inset: 0; background: var(--scrim); display: grid; place-items: center; padding: 16px; z-index: 10; }
+.modal { background: var(--surface); color: var(--ink); border-radius: 12px; width: min(540px, 100%); max-height: 85vh; overflow-y: auto; padding: 20px; display: grid; gap: 12px; }
+.modal-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.modal ul { margin: 0; padding-left: 1.2em; display: grid; gap: 5px; }
+.modal h4 { margin: 0; font-family: var(--mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; }
+.modal .do h4 { color: var(--good); }
+.modal .dont h4 { color: var(--bad); }
+.watch { display: inline-block; background: var(--accent); color: var(--bg); text-decoration: none; font-weight: 700; padding: 9px 14px; border-radius: 6px; justify-self: start; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 5px; }
+.vid-tip { background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; font-size: .95rem; }
+
+/* tables */
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: .95rem; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--mono); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+tr:last-child td { border-bottom: 0; }
+.pill { display: inline-block; font-family: var(--mono); font-size: .72rem; padding: 2px 7px; border-radius: 99px; white-space: nowrap; }
+.pill.build { background: var(--good-soft); color: var(--good); }
+.pill.skip { background: var(--bad-soft); color: var(--bad); }
+.pill.mid { background: var(--accent-soft); color: var(--accent); }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.card ul, section ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+.vid { display: grid; gap: 4px; padding-block: 12px; border-top: 1px solid var(--line); }
+.vid:first-of-type { border-top: 0; }
+.vid .meta { font-family: var(--mono); font-size: .78rem; color: var(--muted); }
+.warn { color: var(--bad); font-weight: 600; }
+.note { font-size: .92rem; color: var(--muted); }
+/* day area: exercises on the left, a sticky side column (video pop-out + workout log) on the right */
+.day-area { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 380px); gap: 16px; align-items: start; }
+.side { position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 12px; align-content: start; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 10px; min-width: 0; }
+.video-panel { border-color: var(--accent); }
+.yt { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: var(--ink); justify-self: center; }
+.yt.yt-short { aspect-ratio: 9 / 16; width: min(100%, 250px); }
+.yt iframe { width: 100%; height: 100%; border: 0; display: block; }
+.yt-links { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .9rem; }
+.yt-links button { padding: 4px 10px; font-size: .85rem; }
+.video-panel ul { margin: 0; padding-left: 1.2em; display: grid; gap: 5px; font-size: .95rem; }
+.video-panel h4 { margin: 0; font-family: var(--mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; }
+.video-panel .do h4 { color: var(--good); }
+.video-panel .dont h4 { color: var(--bad); }
+.log-ex { border-top: 1px solid var(--line); padding-top: 10px; display: grid; gap: 8px; }
+.log-ex-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.log-name { font-weight: 600; font-size: .95rem; min-width: 0; }
+.sets-lab, .date-lab { display: flex; align-items: center; gap: 6px; font-size: .9rem; color: var(--muted); white-space: nowrap; }
+.side input { font: 500 .95rem var(--mono); width: 4.4em; padding: 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
+.side input[type="date"], .side input[type="checkbox"] { width: auto; }
+.check-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: .9rem; color: var(--muted); }
+.check-row label { display: flex; align-items: center; gap: 5px; }
+.side input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.set-rows { display: grid; gap: 6px; padding-left: 10px; border-left: 2px solid var(--accent); }
+.set-rows:empty { display: none; }
+.set-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: .88rem; color: var(--muted); }
+.set-row label { display: flex; align-items: center; gap: 5px; }
+.set-n { font-family: var(--mono); font-size: .75rem; width: 3.6em; color: var(--ink); }
+.log-actions { display: flex; flex-wrap: wrap; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+.log-actions button:disabled { opacity: .6; cursor: wait; }
+.tut-btn[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
+.drawer-close, .log-fab { display: none; }
+@media (max-width: 899px) {
+  .day-area { grid-template-columns: minmax(0, 1fr); }
+  .side { position: fixed; left: 0; right: 0; bottom: 0; top: auto; max-height: 82vh; z-index: 9; background: var(--bg);
+    padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    border-top: 1px solid var(--line); border-radius: 14px 14px 0 0; box-shadow: 0 -8px 24px var(--scrim);
+    transform: translateY(105%); visibility: hidden; }
+  .side.open { transform: none; visibility: visible; }
+  .drawer-close { display: inline-block; }
+  .log-fab { display: inline-block; position: fixed; z-index: 8; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 4px 14px var(--scrim); }
+}
+
+/* calendar */
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal-dow { font-family: var(--mono); font-size: .68rem; text-transform: uppercase; color: var(--muted); text-align: center; }
+.cal-day { padding: 4px 2px; min-height: 50px; display: grid; align-content: start; justify-items: center; gap: 2px; font-size: .8rem; font-variant-numeric: tabular-nums; }
+.cal-day:disabled { cursor: default; opacity: .55; }
+.cal-day.has { background: var(--accent-soft); border-color: var(--accent); }
+.cal-day b { font-family: var(--display); color: var(--accent); font-size: 1rem; line-height: 1; }
+.cal-day.today { outline: 2px solid var(--ink); outline-offset: -2px; }
+.cal-day.picked { background: var(--accent); }
+.cal-day.picked b, .cal-day.picked span { color: var(--bg); }
+.cal-nav { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cal-detail { display: grid; gap: 12px; }
+.cal-w { display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 10px; }
+.cal-w ul { font-size: .92rem; }
+@media (prefers-reduced-motion: no-preference) { button { transition: background .15s, border-color .15s; } .side { transition: transform .2s, visibility .2s; } }
+</style>
+
+<div class="wrap">
+
+<header style="display:grid;gap:10px">
+  <div class="eyebrow">Adjustable dumbbells 5 to 50 lb + bench</div>
+  <h1>V-Taper Home Plan</h1>
+  <p class="lead">A 4-day cycle you repeat back to back, adapted from Mathieu Simoneau's <a href="https://www.youtube.com/watch?v=VNvTHUcxzuY" target="_blank" rel="noopener">model build routine</a>: Push, Pull, Legs + shoulders, Abs. Two hard sets per exercise and 7,000 steps every day. Shoulders and lats get the most work, and anything that makes the waist look thicker is left out.</p>
+</header>
+
+<div class="tracker" aria-label="Rotation tracker">
+  <div class="tracker-top">
+    <div>
+      <div class="eyebrow">Your next workout</div>
+      <div class="today-name" id="todayName">Day A</div>
+    </div>
+    <div class="btns">
+      <button class="primary" id="doneBtn" type="button">Done, move to next day</button>
+      <button id="backBtn" type="button">Go back one</button>
+      <button id="calBtn" type="button">Calendar</button>
+    </div>
+  </div>
+  <div class="strip" id="strip" role="tablist" aria-label="Pick a day to view"></div>
+  <p class="note" id="monthCount"></p>
+  <p class="note">This remembers where you are on this device only. Rest days are not scheduled: take one when you need it (at most 2 a week), still get your 7,000 steps, and do the next day in the cycle when you are back.</p>
+</div>
+
+<div class="day-area" id="dayArea">
+  <div id="dayCard"></div>
+  <aside class="side" id="side" aria-label="Video and workout log">
+    <div class="panel video-panel" id="videoPanel" hidden></div>
+    <div class="panel" id="logPanel"></div>
+  </aside>
+</div>
+<button type="button" class="primary log-fab" id="logFab">Log workout</button>
+
+<section>
+  <div class="eyebrow">The science, briefly</div>
+  <h2>What actually makes a V-taper</h2>
+  <p>The V-taper is a ratio: how wide your shoulders and upper back are compared with how wide your waist is. You can push it two ways, by widening the top and by keeping the waist small.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Muscle</th><th>Effect on the V</th><th>Plan</th></tr></thead>
+    <tbody>
+      <tr><td><b>Side delts</b> (the outer part of the shoulder)</td><td>The single biggest lever for shoulder width from the front and back. They sit on the outside edge of your frame.</td><td><span class="pill build">Top priority</span> 3 days out of every 4 (Push, Legs + shoulders, Abs). Small muscle, recovers fast.</td></tr>
+      <tr><td><b>Lats</b> (the big wing-shaped back muscles under your armpits)</td><td>Make the upper back flare out and make the waist look smaller by contrast.</td><td><span class="pill build">Top priority</span> Pull day: rows plus pullovers.</td></tr>
+      <tr><td><b>Rear delts</b> (back of the shoulder)</td><td>Round out the shoulder from the side and back, and help posture so your shoulders sit wide instead of rolled forward.</td><td><span class="pill build">Build</span> Pull and Legs + shoulders days.</td></tr>
+      <tr><td><b>Upper chest</b></td><td>Fills out the top of the V from the front.</td><td><span class="pill build">Build</span> Push day: 4 chest exercises, 2 on the incline.</td></tr>
+      <tr><td><b>Triceps and biceps</b></td><td>Small role. Bigger arms widen the silhouette slightly.</td><td><span class="pill build">Build</span> 3 exercises each, on Push and Pull days.</td></tr>
+      <tr><td><b>Legs</b></td><td>Not part of the V, but a big upper body on thin legs looks off. They do not hurt the taper.</td><td><span class="pill mid">Keep</span> Half of the Legs + shoulders day, plus calves.</td></tr>
+      <tr><td><b>Upper traps</b> (the muscle between your neck and shoulder)</td><td>When they get big, the neck-to-shoulder line slopes up, which makes the shoulders look narrower.</td><td><span class="pill skip">Don't target</span> They still get enough from rows and Romanian deadlifts.</td></tr>
+      <tr><td><b>Obliques</b> (the side abs)</td><td>Heavily loaded oblique work can thicken the sides of the waist in some people.</td><td><span class="pill skip">No heavy loading</span> Bodyweight only, on the Abs day.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">An honest note on the evidence: studies on attractiveness measure the whole shoulder-to-waist or chest-to-waist ratio. The muscle-by-muscle advice above is the consensus of coaches, not something tested in a lab. There are also no controlled studies on oblique work widening the waist. The cautious reading is that light or bodyweight core work is fine and heavy loaded side work is the risk. Your waist size mostly comes from body fat and your bone structure, so the fat part matters more than any ab exercise (see the last section).</p>
+</section>
+
+<section>
+  <div class="eyebrow">Leave these out</div>
+  <h2>Exercises that work against the V</h2>
+  <p>The twisting move you were thinking of is almost certainly the <b>Russian twist</b>. Here is the full list to skip when it shows up in a video.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Exercise</th><th>Why skip it</th><th>Do this instead</th></tr></thead>
+    <tbody>
+      <tr><td><b>Weighted Russian twist</b></td><td>Loaded rotation trains the obliques directly.</td><td>Dead bug</td></tr>
+      <tr><td><b>Dumbbell side bend</b></td><td>The most direct loaded oblique exercise there is. The classic waist thickener.</td><td>Nothing needed</td></tr>
+      <tr><td><b>Weighted woodchop, weighted oblique crunch</b></td><td>Same reason, loaded side and rotation work.</td><td>Reverse crunch</td></tr>
+      <tr><td><b>Dumbbell shrug</b> (any variation)</td><td>The whole point of a shrug is to grow the upper traps.</td><td>Extra set of rear delt fly</td></tr>
+      <tr><td><b>Upright row</b></td><td>Heavy upper-trap work, and pulling high with the elbows up pinches the shoulder joint for many people.</td><td>Lateral raise</td></tr>
+      <tr><td><b>Dumbbell high pull, heavy farmer carry</b></td><td>Both load the upper traps heavily.</td><td>Skip</td></tr>
+      <tr><td><b>Front raise</b></td><td>Not harmful, but the front delts already get plenty from pressing. Low value for width.</td><td>Lateral raise if short on time</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">Bodyweight planks and side planks are fine. They train you to hold your trunk still with no added load, which is not the kind of work that thickens the waist.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Real-time workouts and form breakdowns</div>
+  <h2>Videos to follow</h2>
+  <p>Every link below was checked: the channel, title and chapter list are real. Where a video has an exercise that works against the V, the skip is listed with the timestamp.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Follow along in real time</h3>
+      <div class="vid">
+        <a href="https://www.youtube.com/watch?v=8PwoytUU06g" target="_blank" rel="noopener"><b>COMPLETE 20 MIN ABS WORKOUT (From Home)</b></a>
+        <span class="meta">Chris Heria · 24 min · Day D</span>
+        <span>The ab workout from the model build video. No equipment. Longer day? Use the <a href="https://www.youtube.com/watch?v=P1mInEK7BEU" target="_blank" rel="noopener">30-minute version</a> (THENX, 33 min).</span>
+      </div>
+      <div class="vid">
+        <a href="https://www.youtube.com/watch?v=BKTtJk9-3x0" target="_blank" rel="noopener"><b>The Most Effective Full Body Workout You Can Do Without A Gym</b></a>
+        <span class="meta">Renaissance Periodization · 14 min</span>
+        <span>Five supersets with one pair of dumbbells, covering lats, chest, delts, arms and legs. Nothing to skip in the chapter list. Use it on a short-on-time day in place of any day.</span>
+      </div>
+      <div class="vid">
+        <a href="https://www.youtube.com/watch?v=KyQu4QHPX_c" target="_blank" rel="noopener"><b>Full Shoulder Workout with Dumbbells</b></a>
+        <span class="meta">TIFF x DAN · 27 min · can replace the shoulder half of Day C</span>
+        <span><span class="warn">Skip 21:00 Shoulder Shrugs Variation</span> (do rear delt flys in that slot). The front raises at 5:00 and 14:00 are low value; go light or swap for lateral raises.</span>
+      </div>
+      <div class="vid">
+        <a href="https://www.youtube.com/watch?v=qVsSZM1vASQ" target="_blank" rel="noopener"><b>30 Min Shoulder and Arms Dumbbell Workout</b></a>
+        <span class="meta">Tom Peto Training · 30 min · can replace the shoulder half of Day C</span>
+        <span><span class="warn">Skip A3 Upright Row</span> in the first section (do lateral raises during it). Everything else fits.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Watch once for form</h3>
+      <div class="vid">
+        <a href="https://www.youtube.com/watch?v=4hTUCDUQaNA" target="_blank" rel="noopener"><b>The Only Dumbbell Lateral Raise Guide You Need</b></a>
+        <span class="meta">Renaissance Periodization · 9 min · most important video here</span>
+        <span>Elbow angle, body position, thumb angle, range of motion, lowering speed.</span>
+      </div>
+      <div class="vid">
+        <a href="https://www.youtube.com/watch?v=nuiyBW3IOQE" target="_blank" rel="noopener"><b>How to Lateral Raise PERFECTLY</b></a>
+        <span class="meta">Katie Steinruck (IFBB pro)</span>
+        <span>Second angle on the same lift. Good for the "keep it out of your traps" feel.</span>
+      </div>
+      <div class="vid">
+        <a href="https://www.youtube.com/watch?v=qfc70k40318" target="_blank" rel="noopener"><b>How To Build Boulder Rear Delts</b></a>
+        <span class="meta">Jeff Nippard · 7 min</span>
+        <span>Rear delt technique and the mistakes that shift the work to your traps.</span>
+      </div>
+      <div class="vid">
+        <a href="https://www.youtube.com/watch?v=mmZGons-V9s" target="_blank" rel="noopener"><b>5 Dumbbell Back Exercises for a V Taper</b></a>
+        <span class="meta">Gym Body Motivation · 3 min · dumbbells + bench</span>
+        <span>Quick demos of pullover, incline rows and single-arm row. <span class="warn">Skip 2:24 Seated Dumbbell Shrugs.</span></span>
+      </div>
+      <div class="vid">
+        <a href="https://www.youtube.com/watch?v=k5R9OB6q2So" target="_blank" rel="noopener"><b>The RIGHT Way to Do Dumbbell Pullovers for Back</b></a>
+        <span class="meta">Cris Edmonds TV · John Meadows style</span>
+        <span>How to make the pullover hit lats instead of chest.</span>
+      </div>
+      <div class="vid">
+        <a href="https://www.youtube.com/watch?v=hiLF_pF3EJM" target="_blank" rel="noopener"><b>Stop F*cking Up Bulgarian Split Squats</b></a>
+        <span class="meta">ATHLEAN-X · 5 min</span>
+        <span>Exactly where to put your front and back foot relative to the bench.</span>
+      </div>
+      <div class="vid">
+        <a href="https://www.youtube.com/watch?v=WOtoWKe6iRo" target="_blank" rel="noopener"><b>Three V-Taper Back Workout Tips</b></a>
+        <span class="meta">ATHLEAN-X</span>
+        <span>General wide-lat tips. Some use gym equipment; take the cues, not the machines.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="vid-tip"><b>For any exercise:</b> each exercise in the day cards above has a "Find a demo" link. It searches YouTube for that exact name plus "form muscles worked animation", which brings up short animated clips that highlight the muscles each move uses. The site MuscleWiki also shows animations with the worked muscles highlighted, and you can filter it to dumbbells only.</div>
+  <p class="note">Runner-up if you ever want only 3 days a week: <a href="https://www.youtube.com/watch?v=7mN7W1yTQJM" target="_blank" rel="noopener">Dumbbell-Only 3 Day Full Body Workout Program</a> by Dr. Swole (a medical doctor and natural physique athlete). It is a program explained on video, not a follow-along, and it is not V-taper specific.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Form</div>
+  <h2>The cues that matter most</h2>
+  <div class="grid2">
+    <div class="card"><h3>Lateral raise</h3><ul>
+      <li>Go light. 10 to 20 lb is normal even for strong people. If you feel it in your neck, the weight is too heavy.</li>
+      <li>Lead with your elbows, not your hands. Keep a small bend in the elbow.</li>
+      <li>Stop at shoulder height. Going higher hands the work to your traps.</li>
+      <li>Keep your shoulders pressed down away from your ears the whole time.</li>
+      <li>Arms slightly in front of your body, not straight out to the side.</li>
+      <li>Lower over 2 to 3 seconds. No swinging or leaning back.</li>
+    </ul></div>
+    <div class="card"><h3>Single-arm row</h3><ul>
+      <li>Knee and hand on the bench, back flat and roughly parallel to the floor.</li>
+      <li>Pull your elbow toward your hip (your back pocket), not straight up to your chest. That is what makes it a lat exercise.</li>
+      <li>At the bottom, let the shoulder stretch down for a full lat stretch.</li>
+      <li>Don't twist your torso open or shrug at the top.</li>
+    </ul></div>
+    <div class="card"><h3>Pullover</h3><ul>
+      <li>Hold one dumbbell with both hands, elbows slightly bent and kept at that angle.</li>
+      <li>Lower behind your head only until you feel a stretch under your armpits.</li>
+      <li>Keep your ribs down; don't let your lower back arch up off the bench.</li>
+      <li>Start light. The bottom position puts the shoulder in a long stretch.</li>
+      <li>Never go to failure on this one. Stop 2 to 3 reps short.</li>
+      <li>Stuck rep: bend your elbows a lot so the dumbbell comes closer to your head, then pull it back over your chest. Never let go of a dumbbell above your face.</li>
+      <li>Adjustable dumbbells: hold the handle with both hands, not the end plates, and make sure the selector is fully locked before every set.</li>
+      <li>Safest version: lie on the floor. The floor catches the dumbbell at the bottom, so it can't drop past a safe stretch (<a href="https://www.youtube.com/watch?v=XZjBcjLfhGo" target="_blank" rel="noopener">floor pullover demo</a>).</li>
+    </ul></div>
+    <div class="card"><h3>Rear delt fly</h3><ul>
+      <li>Chest down on an incline bench, or bent forward at about 90 degrees.</li>
+      <li>Move your arms out wide, not back toward your hips.</li>
+      <li>Do not squeeze your shoulder blades together hard; that shifts work to the mid-back and traps.</li>
+      <li>Light weight, slow lowering.</li>
+    </ul></div>
+    <div class="card"><h3>Dumbbell presses</h3><ul>
+      <li>Shoulder blades pulled back and down into the bench before you start.</li>
+      <li>Elbows at about 45 degrees from your body, not flared straight out.</li>
+      <li>Get heavy dumbbells into place by resting them on your knees and rolling back with them.</li>
+      <li>Feet flat on the floor, controlled lowering to chest level.</li>
+    </ul></div>
+    <div class="card"><h3>Romanian deadlift</h3><ul>
+      <li>Push your hips back; knees bend only slightly.</li>
+      <li>Dumbbells slide down the front of your thighs.</li>
+      <li>Back stays flat. Stop when your hamstrings are fully stretched or right before your back starts to round.</li>
+      <li>Stand tall at the top. Don't shrug.</li>
+    </ul></div>
+    <div class="card"><h3>Bulgarian split squat</h3><ul>
+      <li>Set your front foot by sitting on the bench and extending one leg; that is about where your heel goes. Then move it 2 to 3 inches out to the side.</li>
+      <li>Rest the top of your back foot (laces) on the bench, not just your toes.</li>
+      <li>Front knee follows the direction of your toes. Use a wall for balance at first.</li>
+    </ul></div>
+    <div class="card"><h3>Every session</h3><ul>
+      <li>Warm up: 5 minutes moving, then 1 to 2 light sets of the first exercise.</li>
+      <li>Two sets per exercise, taken to failure: the point where you can't do another clean rep. Presses, skull crushers, overhead extensions and goblet squats stop 1 rep short; pullovers stop 2 to 3 short. Adjustable dumbbells should not be dropped, so never fail a rep you can't set down safely. Form breaking down means the set is over.</li>
+      <li>On lateral raises and rear delt flys, failure means the first shrug. Shrugging hands the work to the upper traps, which make shoulders look narrower.</li>
+      <li>Sharp or joint pain: stop that exercise. Muscle burn is fine; joint pain is not.</li>
+      <li>Rest 2 to 3 minutes on rows, presses and leg work, 1 to 1.5 minutes on raises and arm work.</li>
+    </ul></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">How to keep growing</div>
+  <h2>Progress and the 50 lb ceiling</h2>
+  <ul>
+    <li><b>Rep ranges.</b> Each exercise has a range like 8 to 12. Pick a weight you can do for the low end. When you hit the top of the range on every set, go up one dumbbell step (2.5 to 5 lb).</li>
+    <li><b>Write it down.</b> A notes app is enough. Beat last time by one rep or one weight step.</li>
+    <li><b>When 50 lb gets easy</b> (legs will hit this first): lower over 3 to 4 seconds, pause 2 seconds at the bottom, do "one and a half" reps (go down, half up, back down, all the way up), or push the rep range up to 20 to 30. All of these keep muscles growing with lighter weight.</li>
+    <li><b>Rest days.</b> Each muscle group gets about 3 days off before its next turn. If a muscle is still sore enough to change how you move, or you feel run down, take a rest day (keep the steps) and do the next day in the cycle afterwards.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="eyebrow">The other half of the ratio</div>
+  <h2>Keeping the waist small</h2>
+  <p>Most of your waist width is body fat and the width of your hip bones. You cannot spot-reduce fat with ab exercises, so the waist side of the V comes from the kitchen.</p>
+  <ul>
+    <li><b>If you carry belly fat:</b> eat a little under maintenance (roughly 300 to 500 calories below) while you train. You will lose fat from the waist and keep or build muscle up top.</li>
+    <li><b>Protein:</b> about 0.7 to 1 gram per pound of bodyweight every day.</li>
+    <li><b>Check it weekly:</b> once a week, same time of day (first thing in the morning is easiest), log your weight and your waist measured at the belly button. If neither has moved in 2 to 3 weeks and you still carry belly fat, eat a little less. The workout log has boxes for both.</li>
+    <li><b>Steps:</b> 7,000 a day, rest days included. He found no visible difference going up to 10,000. Any cardio of the same length counts.</li>
+    <li><b>Sleep:</b> 7 to 9 hours. This is when you recover from daily training.</li>
+  </ul>
+</section>
+
+<p class="note">Sources used for the research: <a href="https://outlift.com/v-taper-and-shoulder-to-waist-ratio/" target="_blank" rel="noopener">Outlift on shoulder-to-waist ratio</a>, <a href="https://barbend.com/x-frame-bodybuilding/" target="_blank" rel="noopener">BarBend on X-frame and V-taper muscles</a>, <a href="https://bonytobeastly.com/v-taper-physique/" target="_blank" rel="noopener">Bony to Beastly on the V-taper</a>, <a href="https://livestrong.com/article/388803-can-oblique-exercises-make-the-waist-wider/" target="_blank" rel="noopener">Livestrong on oblique work and waist width</a>, <a href="https://cathe.com/can-certain-strength-training-exercises-make-waistline-larger/amp" target="_blank" rel="noopener">Cathe on exercises and waistline</a>, <a href="https://fitnessvolt.com/jeff-nippard-ranks-best-worst-shoulder-exercises/" target="_blank" rel="noopener">Fitness Volt on Jeff Nippard's shoulder exercise ranking</a>, <a href="https://www.coachweb.com/exercises/shoulder-exercises/206/lateral-raises-how-do-them-and-why-you-should" target="_blank" rel="noopener">Coach on lateral raise form</a>, <a href="https://fitnessdrum.com/best-dumbbell-lat-exercises-workout/" target="_blank" rel="noopener">Fitness Drum on dumbbell lat exercises</a>, <a href="https://shop.humankinetics.com/blogs/excerpt/optimized-training-frequency-for-muscle-hypertrophy" target="_blank" rel="noopener">Schoenfeld (Human Kinetics) on training frequency</a>. This is general fitness information, not medical advice; check with a doctor if you have an injury.</p>
+
+</div>
+
+<div class="modal-back" id="modalBack" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" id="modal"></div>
+</div>
+
+<script>
+// Tutorials Aaron picked. Tips come from each video's own transcript or captions; "mine" lines are where this plan differs.
+const TUTORIALS = {
+  "Single-arm dumbbell row": {
+    url: "https://www.youtube.com/watch?v=dFzUjzfih7k", channel: "Max Euceda", title: "How to do the SINGLE ARM DUMBBELL ROW! | 2 Minute Tutorial",
+    do: [
+      "Hand and same-side knee on the bench, other foot planted out to the side, slightly behind your hips.",
+      "Hold the dumbbell loosely like a hook, thumb wrapped around, so your biceps and forearm don't take over.",
+      "Flat back, chest up, abs tight, eyes looking down.",
+      "At the bottom, let your shoulder blade slide forward so the lat fully stretches.",
+      "For lats (this plan's version): drive your elbow back and row toward your hip. Elbow stays tucked by your side.",
+      "Lower slowly, a little forward, all the way to a full stretch."
+    ],
+    dont: [
+      "Don't row toward your chest with the elbow flared up. That version shifts the work to the upper back, not the lats.",
+      "Don't grip hard and curl the weight up with your arm.",
+      "Don't round your back or look up."
+    ]
+  },
+  "Dumbbell pullover": {
+    url: "https://www.youtube.com/watch?v=5lbvUCXfDU0", channel: "mountaindog1 (John Meadows)", title: "Dumbbell pullovers You are doing them wrong",
+    do: [
+      "Lie along the bench (across also works). Put a slight bend in your elbows, then lock that angle for the whole set.",
+      "Pull the weight with your lats, not your arms.",
+      "Lower as slowly as you can, only as deep as feels comfortable in your shoulders.",
+      "On the way up, stop at about forehead level, where your lats still feel tension."
+    ],
+    dont: [
+      "Don't bend your elbows on the way down and push the weight back up. That turns it into a triceps exercise.",
+      "Don't force a deeper stretch than your shoulders like.",
+      "Don't bring the weight all the way up over your chest. The lats stop working there.",
+      "Plan rule: stop 2 to 3 reps short of failure. If a rep stalls, bend your elbows and bring the weight back over your chest."
+    ]
+  },
+  "Lean-in lateral raise": {
+    url: "https://www.youtube.com/watch?v=bYAbklyK4_c", channel: "FunctionalMuscleFitness", title: "Lean In Lateral Raise",
+    do: [
+      "Lean in means pushing into the wall or rack, with your feet farther away from it. It is not the leaning-away raise.",
+      "Bring the weight out slightly in front of your body. This helps keep your traps out of it.",
+      "Turn your hand slightly so the pinky is a little higher than the thumb (a small turn, not pouring a jug).",
+      "Raise slowly, pause briefly, lower slowly, and let the arm drift a little across your body at the bottom for the stretch."
+    ],
+    dont: [
+      "Where this plan differs: the video's description says to lock the arm straight and raise above your head. Keep a small bend in the elbow and stop when your arm is level with your shoulder relative to your body. Going higher brings in the upper traps.",
+      "If turning the pinky up pinches the front of your shoulder, keep your hand flat instead.",
+      "Don't swing or shrug. If you feel it in your neck, go lighter."
+    ]
+  },
+  "Chest-supported rear delt fly": {
+    url: "https://www.youtube.com/watch?v=N_AWzSotxOQ", channel: "Forge Personal Training", title: "Chest Supported Rear Delt Fly",
+    do: [
+      "Lie chest-down on the incline bench and tuck your chin (a slight double chin) for posture.",
+      "Turn your palms down so your pinkies point up. This aims the work at the back of the shoulder.",
+      "Arms long and stiff, elbows kept high.",
+      "Think \"reach for the walls on each side\": hands and elbows pulling apart.",
+      "Light weight, slow, no momentum."
+    ],
+    dont: [
+      "Don't try to pull the weights back toward you. Your shoulder blades squeeze back too far and the elbows drop.",
+      "Don't raise your hands above your body. Stop when hands and elbows are in line with your torso.",
+      "Don't let your elbows buckle or bend more as you go."
+    ]
+  },
+  "Dead bug": {
+    url: "https://www.youtube.com/watch?v=GbSC02oU3To", channel: "Hinge Health (physical therapists)", title: "How to Do a Dead Bug: A Guide from Physical Therapists",
+    do: [
+      "On your back, arms reaching to the ceiling, hips and knees bent to 90 degrees, feet off the floor.",
+      "Reach one arm overhead while the opposite leg straightens out.",
+      "Hand and foot hover a few inches above the floor. Hold briefly.",
+      "Keep your back flat on the floor and squeeze your core the whole time.",
+      "Return to start, then switch sides."
+    ],
+    dont: [
+      "Don't let your hand or heel rest on the floor.",
+      "Don't let your lower back arch off the floor. If it does, don't reach as far.",
+      "Don't rush. Slow and controlled is the point."
+    ]
+  }
+};
+// Close relatives share a tutorial
+TUTORIALS["Bent-over rear delt fly"] = Object.assign({}, TUTORIALS["Chest-supported rear delt fly"], {
+  note: "This video shows the chest-supported version. The same arm cues apply when you're bent over instead; keep your back flat."
+});
+
+// Short form clips Aaron added for exercises without a full tutorial card
+const CLIPS = {
+  "Incline dumbbell press": { url: "https://www.youtube.com/shorts/8fXfwG4ftaQ", channel: "Andrew Kwong (DeltaBolic)", title: "The PERFECT Incline Dumbbell Chest Press" },
+  "Flat dumbbell press": { url: "https://www.youtube.com/shorts/Gf65Yy0-wGI", channel: "DEMIC", title: "The Best Dumbbell Bench Press Tutorial You'll Ever Watch" },
+  "Seated dumbbell shoulder press": { url: "https://www.youtube.com/shorts/k6tzKisR3NY", channel: "Andrew Kwong (DeltaBolic)", title: "The PERFECT Dumbbell Shoulder Press (DO THIS!)" },
+  "Overhead dumbbell triceps extension": { url: "https://www.youtube.com/shorts/SfAxwNHfMyY", channel: "Stan Bakh", title: "Dumbbell Overhead Triceps Extension mistakes! Check out this video showcasing the proper techniques!" },
+  "Incline chest-supported dumbbell row": { url: "https://www.youtube.com/watch?v=vmX58YYK3-8", channel: "Seriously Strong Training", title: "Perfect Dumbbell Chest Supported Rows (KING of Back Exercises)" },
+  "Dumbbell bent-over row": { url: "https://www.youtube.com/watch?v=knB5Q4FN4ck", channel: "Testosterone Nation", title: "Bent-Over Dumbbell Row" },
+  "Incline dumbbell curl": { url: "https://www.youtube.com/watch?v=HhHHBj3qTJ4", channel: "Max Euceda", title: "How to do the INCLINE DUMBBELL CURL! | 2 Minute Tutorial" },
+  "Hammer curl": { url: "https://www.youtube.com/watch?v=OPqe0kCxmR8", channel: "One Minute Tutorial", title: "Dumbbell Hammer Curls Tutorial | CORRECT TECHNIQUE (!)" },
+  "Dumbbell curl": { url: "https://www.youtube.com/shorts/oLyP6sORFOc", channel: "Andrew Kwong (DeltaBolic)", title: "Don't Make THIS Bicep Curl Mistake!" },
+  "Chris Heria abs follow-along": { url: "https://www.youtube.com/watch?v=8PwoytUU06g", channel: "Chris Heria", title: "COMPLETE 20 MIN ABS WORKOUT (From Home)",
+    alt: { url: "https://www.youtube.com/watch?v=P1mInEK7BEU", label: "30-minute version (THENX)" } }
+};
+function videoFor(name) { return TUTORIALS[name] || CLIPS[name] || null; }
+
+const wide = window.matchMedia("(min-width: 900px)");
+let lastFocus = null;
+let openVideoName = null;
+let calOpen = false, calMonth = null, calPick = null;
+
+// Pop-out body, shared by the side panel (wide screens) and the modal (phones).
+// Self-hosted copy: YouTube's privacy-enhanced player plays right in the panel.
+function ytEmbed(url) {
+  const m = url.match(/(?:v=|shorts\/)([A-Za-z0-9_-]{11})/);
+  if (!m) return "";
+  return '<div class="yt' + (url.includes("/shorts/") ? " yt-short" : "") + '"><iframe src="https://www.youtube-nocookie.com/embed/' + m[1] +
+    '?rel=0&playsinline=1&autoplay=1" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>';
+}
+function videoBody(name, closeId) {
+  const t = videoFor(name);
+  const li = arr => "<ul>" + arr.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>";
+  return '<div class="modal-top"><div><div class="eyebrow">Video</div><h3 id="videoTitle">' + esc(name) + '</h3></div>' +
+    '<button type="button" id="' + closeId + '" aria-label="Close video">Close</button></div>' +
+    ytEmbed(t.url) +
+    '<div class="note">' + esc(t.title) + " · " + esc(t.channel) + "</div>" +
+    '<div class="yt-links">' + (t.alt ? '<button type="button" data-swap="' + t.alt.url + '">Play the ' + esc(t.alt.label) + " instead</button>" : "") +
+    '<a href="' + t.url + '" target="_blank" rel="noopener">Open on YouTube</a></div>' +
+    (t.note ? '<div class="vid-tip">' + esc(t.note) + "</div>" : "") +
+    (t.do ? '<div class="do"><h4>Do</h4>' + li(t.do) + "</div>" : "") +
+    (t.dont ? '<div class="dont"><h4>Don\'t</h4>' + li(t.dont) + "</div>" : "");
+}
+function openVideo(name) {
+  if (!videoFor(name)) return;
+  lastFocus = document.activeElement;
+  if (wide.matches) {
+    openVideoName = name;
+    const p = document.getElementById("videoPanel");
+    p.innerHTML = videoBody(name, "videoClose");
+    p.hidden = false;
+    markVideoButtons();
+    document.getElementById("side").scrollTop = 0;
+  } else {
+    openModal(videoBody(name, "modalClose"), "videoTitle");
+  }
+}
+function closeVideo() {
+  openVideoName = null;
+  const p = document.getElementById("videoPanel");
+  p.hidden = true;
+  p.innerHTML = "";
+  markVideoButtons();
+  if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+}
+function markVideoButtons() {
+  document.querySelectorAll("#dayCard .tut-btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.tut === openVideoName ? "true" : "false"));
+}
+function openModal(html, labelId) {
+  if (!lastFocus) lastFocus = document.activeElement;
+  const m = document.getElementById("modal");
+  m.setAttribute("aria-labelledby", labelId);
+  m.innerHTML = html;
+  document.getElementById("modalBack").hidden = false;
+  document.getElementById("modalClose").focus();
+}
+function closeModal() {
+  document.getElementById("modalBack").hidden = true;
+  document.getElementById("modal").innerHTML = "";
+  calOpen = false;
+  if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+  lastFocus = null;
+}
+document.getElementById("modalBack").addEventListener("click", e => { if (e.target.id === "modalBack") closeModal(); });
+document.getElementById("modal").addEventListener("click", onModalClick);
+function swapVideo(btn) {
+  const box = btn.closest(".panel, .modal").querySelector(".yt");
+  if (box) box.outerHTML = ytEmbed(btn.dataset.swap);
+  btn.remove();
+}
+document.getElementById("side").addEventListener("click", e => {
+  if (e.target.id === "videoClose") closeVideo();
+  else if (e.target.dataset && e.target.dataset.swap) swapVideo(e.target);
+});
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  if (!document.getElementById("modalBack").hidden) closeModal();
+  else if (openVideoName) closeVideo();
+  else document.getElementById("side").classList.remove("open");
+});
+
+const DAYS = [
+  { key: "A", name: "Push", targets: "Chest, triceps, side delts",
+    tip: "Every set goes to failure except the two presses, the overhead extension and the skull crusher: stop those 1 rep short. Nobody is there to take the dumbbell, and adjustable dumbbells should not be dropped.",
+    ex: [
+      ["Incline dumbbell press", "2 × 8-12 · 1 rep short", "Bench at about 30 degrees. Pick a weight that lands you at 8 to 12. Past 12, go up a step."],
+      ["Flat dumbbell press", "2 × 8-12 · 1 rep short", "Shoulder blades back and down. Rest the dumbbells on your knees and roll back with them to get into place."],
+      ["Incline dumbbell fly", "2 × 10-15 · to failure", "Slight bend in the elbows, wide arc, full stretch at the bottom. The set ends when you can't control the lowering."],
+      ["Push-up, feet on bench", "2 × to failure", "Feet up aims it at the upper chest. Too hard? Put your hands on the bench instead."],
+      ["Overhead dumbbell triceps extension", "2 × 10-15 · 1 rep short", "One dumbbell, both hands, elbows pointing up. Sit on the bench with your back supported. Not to failure: a stuck rep leaves the dumbbell behind your neck."],
+      ["Dumbbell skull crusher", "2 × 10-15 · 1 rep short", "On the bench, lower the dumbbells beside your head, never over your face."],
+      ["Dumbbell triceps kickback", "2 × 12-15 · to failure", "Hand and knee on the bench, upper arm still and pinned to your side. Only the forearm moves."],
+      ["Dumbbell lateral raise", "2 × 12-20 · to failure", "Not in his routine. Added so side delts get worked 3 days out of every 4. Stop at shoulder height. The set ends at the first shrug, even if you could force more reps."]
+    ]},
+  { key: "B", name: "Pull", targets: "Lats, upper back, biceps",
+    tip: "The back builds the frame he is after. On every row, pull toward your hip so the lats do the work.",
+    ex: [
+      ["Single-arm dumbbell row", "2 × 8-12 /side · to failure", "Pull to your hip, not your chest (the hip version trains the lats, which give you width). Elbow close to your side, 1 second up, 2 to 3 seconds down."],
+      ["Incline chest-supported dumbbell row", "2 × 10-12 · to failure", "Chest on the incline bench, elbows about 45 degrees out. Shoulders stay away from your ears."],
+      ["Dumbbell pullover", "2 × 10-15 · 2-3 reps short", "Lie along the bench, head supported. Never near failure: the dumbbell is over your face. If a rep stalls, bend your elbows and pull it back over your chest. Nervous about it? Do it lying on the floor so the floor stops the dumbbell."],
+      ["Dumbbell bent-over row", "2 × 8-12 · to failure", "Both arms at once. Hinge to about 45 degrees, flat back, row toward your hips. End the set if your back starts to round."],
+      ["Chest-supported rear delt fly", "2 × 15-20 · to failure", "Added to his routine so rear delts get 2 days per cycle. Chest on the incline bench, arms out wide, not back. The set ends at the first shrug."],
+      ["Incline dumbbell curl", "2 × 10-12 · to failure", "Lying back on the incline bench, arms hanging behind you."],
+      ["Hammer curl", "2 × 10-12 · to failure", "Thumbs up."],
+      ["Dumbbell curl", "2 × 10-12 · to failure", "Palms up, no swinging."]
+    ]},
+  { key: "C", name: "Legs + shoulders", targets: "Side delts, rear delts, legs, calves",
+    tip: "He gives shoulders half a day because they build the frame and grow slowly. Rear delts are what make the shoulder look round from the side. Want to follow along for the shoulder half? Use the TIFF x DAN or Tom Peto video (skip the shrugs or upright rows).",
+    ex: [
+      ["Seated dumbbell shoulder press", "2 × 8-12 · 1 rep short", "Back supported. Lower to about ear level."],
+      ["Lean-in lateral raise", "2 × 12-20 /side · to failure", "Stand sideways to a doorframe, free hand on it, and tilt your body toward it. Raise the outer arm. The set ends at the first shrug."],
+      ["Seated dumbbell lateral raise", "2 × 15-20 · to failure", "Last set: when you can't do a full rep, keep doing half reps from the bottom until you can't. Stop if your shoulders start creeping up toward your ears."],
+      ["Chest-supported rear delt fly", "2 × 15-20 · to failure", "Chest on an incline bench, or bent over with your forehead resting on the bench."],
+      ["Bulgarian split squat", "2 × 8-12 /leg · to failure", "Back foot on the bench, laces down. Safe to take to failure: you can just set the dumbbells down."],
+      ["Dumbbell Romanian deadlift", "2 × 8-12 · stop at form break", "Hips back, flat back, no shrug at the top. End the set when your back starts to round, not at muscle failure."],
+      ["Goblet squat", "2 × 12-20 · 1 rep short", "Hold one dumbbell at your chest. Squat down until you lightly touch the bench behind you, so you can sit if a rep stalls. Heels on a small plate or book if your ankles are stiff."],
+      ["Single-leg calf raise", "2 × 12-20 /leg · to failure", "He recommends a calf exercise so your calves don't look too skinny. On a step, full stretch at the bottom."]
+    ]},
+  { key: "D", name: "Abs", targets: "Abs (bodyweight only), side delts",
+    tip: "Bodyweight only, as in the video: he says weighted ab work gave him blocky abs instead of a taper. If the follow-along has Russian twists, do them with no weight.",
+    ex: [
+      ["Chris Heria abs follow-along", "20 or 30 min", "The workout he uses. Rests are about 15 seconds; pause the video if you need to. In the log, enter 1 set."],
+      ["Dumbbell lateral raise", "2 × 12-20 · to failure", "Not in his routine. Added so side delts get worked 3 days out of every 4. They recover fast. The set ends at the first shrug."]
+    ]}
+];
+
+// Plain names shown on hover and in the text under each exercise
+const NAMES = {
+  frontDelt: "Front delts (front of shoulder)", sideDelt: "Side delts (outer shoulder)", rearDelt: "Rear delts (back of shoulder)",
+  upperChest: "Upper chest", chest: "Chest", biceps: "Biceps", triceps: "Triceps", forearms: "Forearms",
+  abs: "Abs (front)", obliques: "Obliques (side abs)", upperTraps: "Upper traps (neck to shoulder)",
+  midBack: "Mid back (mid traps, rhomboids)", lats: "Lats (back width)", lowerBack: "Lower back",
+  glutes: "Glutes", quads: "Quads (front thigh)", hamstrings: "Hamstrings (back thigh)", calves: "Calves"
+};
+
+// [main muscles, helper muscles] for each exercise
+const WORKS = {
+  "Single-arm dumbbell row": [["lats", "midBack"], ["rearDelt", "biceps", "forearms"]],
+  "Dumbbell pullover": [["lats"], ["chest", "triceps"]],
+  "Lean-in lateral raise": [["sideDelt"], ["frontDelt"]],
+  "Chest-supported rear delt fly": [["rearDelt"], ["midBack"]],
+  "Dead bug": [["abs"], ["obliques"]],
+  "Incline dumbbell fly": [["upperChest", "chest"], ["frontDelt"]],
+  "Push-up, feet on bench": [["upperChest", "chest"], ["triceps", "frontDelt", "abs"]],
+  "Dumbbell triceps kickback": [["triceps"], []],
+  "Dumbbell bent-over row": [["lats", "midBack"], ["rearDelt", "biceps", "lowerBack"]],
+  "Chris Heria abs follow-along": [["abs"], ["obliques"]],
+  "Bulgarian split squat": [["quads", "glutes"], ["hamstrings"]],
+  "Dumbbell Romanian deadlift": [["hamstrings", "glutes"], ["lowerBack", "forearms"]],
+  "Goblet squat": [["quads", "glutes"], ["abs"]],
+  "Single-leg calf raise": [["calves"], []],
+  "Reverse crunch on bench": [["abs"], []],
+  "Plank": [["abs"], ["obliques", "frontDelt"]],
+  "Incline dumbbell press": [["upperChest"], ["frontDelt", "triceps"]],
+  "Flat dumbbell press": [["chest"], ["upperChest", "frontDelt", "triceps"]],
+  "Seated dumbbell shoulder press": [["frontDelt"], ["sideDelt", "triceps", "upperTraps"]],
+  "Dumbbell lateral raise": [["sideDelt"], ["frontDelt"]],
+  "Overhead dumbbell triceps extension": [["triceps"], []],
+  "Incline chest-supported dumbbell row": [["midBack", "lats"], ["rearDelt", "biceps"]],
+  "Bent-over rear delt fly": [["rearDelt"], ["midBack"]],
+  "Incline dumbbell curl": [["biceps"], ["forearms"]],
+  "Hammer curl": [["biceps", "forearms"], []],
+  "Dumbbell step-up": [["quads", "glutes"], ["hamstrings", "calves"]],
+  "Single-leg Romanian deadlift": [["hamstrings", "glutes"], ["lowerBack"]],
+  "Dumbbell hip thrust": [["glutes"], ["hamstrings"]],
+  "Heels-elevated goblet squat": [["quads"], ["glutes"]],
+  "Lying leg raise": [["abs"], []],
+  "Side plank": [["obliques"], ["abs"]],
+  "Seated dumbbell lateral raise": [["sideDelt"], ["frontDelt"]],
+  "Dumbbell skull crusher": [["triceps"], []],
+  "Dumbbell curl": [["biceps"], ["forearms"]],
+  "Bench dip": [["triceps"], ["frontDelt", "chest"]],
+  "Brisk walk": [[], ["quads", "hamstrings", "glutes", "calves"]],
+  "Doorway chest stretch": [[], ["chest", "upperChest", "frontDelt"]],
+  "Dead hang or lat stretch on bench": [[], ["lats"]]
+};
+
+// Shapes are drawn for the body's left half and mirrored; "c" shapes sit on the center line and are drawn once.
+// Each view is 100 units wide, centered on x = 50.
+const FRONT = [
+  ["upperTraps", "M44 27 L38 35 L44 33 Z"],
+  ["frontDelt", "e", 32, 43, 6, 7],
+  ["sideDelt", "e", 25.5, 45, 4.5, 8],
+  ["upperChest", "M37 37 Q43 35 49 37 L49 44 L36 44 Z"],
+  ["chest", "M36 44.8 L49 44.8 L49 54 Q42 57 37 52 Z"],
+  ["biceps", "e", 26, 61, 4.8, 9.5],
+  ["forearms", "e", 23, 83, 4.2, 11],
+  ["abs", "c", "M43.5 56.5 h13 v31 q-6.5 4 -13 0 Z"],
+  ["obliques", "M36.5 56 L42.3 57.5 L42.3 88 L38.5 90 Q35 72 36.5 56 Z"],
+  ["quads", "e", 42, 118, 8, 21],
+  ["calves", "e", 41, 160, 4.8, 13]
+];
+const BACK = [
+  ["upperTraps", "c", "M44 27 L56 27 L63 37 L50 41 L37 37 Z"],
+  ["midBack", "c", "M40 39 L50 42 L60 39 L57 50 L50 64 L43 50 Z"],
+  ["rearDelt", "e", 32, 43, 6, 7],
+  ["sideDelt", "e", 25.5, 45, 4.5, 8],
+  ["lats", "M36 46 Q40 46 43 52 L44.5 76 Q39 76 37 70 Q34 58 36 46 Z"],
+  ["triceps", "e", 26, 61, 4.8, 9.5],
+  ["forearms", "e", 23, 83, 4.2, 11],
+  ["lowerBack", "M45.5 65 L49.3 66 L49.3 89 L45 89 Z"],
+  ["glutes", "e", 42, 100, 8.5, 9.5],
+  ["hamstrings", "e", 42, 127, 7.5, 16.5],
+  ["calves", "e", 41, 160, 5.5, 13]
+];
+
+function shape(def, cls) {
+  const t = "<title>" + NAMES[def[0]] + "</title>";
+  if (def[1] === "e") {
+    const one = (cx) => '<ellipse class="' + cls + '" cx="' + cx + '" cy="' + def[3] + '" rx="' + def[4] + '" ry="' + def[5] + '">' + t + "</ellipse>";
+    return one(def[2]) + one(100 - def[2]);
+  }
+  if (def[1] === "c") return '<path class="' + cls + '" d="' + def[2] + '">' + t + "</path>";
+  return '<path class="' + cls + '" d="' + def[1] + '">' + t + '</path><path class="' + cls + '" d="' + def[1] + '" transform="matrix(-1 0 0 1 100 0)">' + t + "</path>";
+}
+function view(defs, main, help, dx, label) {
+  let s = '<g transform="translate(' + dx + ' 0)">';
+  // head, neck, hands, feet: not muscles, drawn faint
+  s += '<circle class="skin" cx="50" cy="15" r="10"/><rect class="skin" x="45.5" y="24" width="9" height="6" rx="2"/>';
+  s += '<circle class="skin" cx="22" cy="99" r="3.8"/><circle class="skin" cx="78" cy="99" r="3.8"/>';
+  s += '<ellipse class="skin" cx="41" cy="179" rx="4.5" ry="3"/><ellipse class="skin" cx="59" cy="179" rx="4.5" ry="3"/>';
+  defs.forEach(d => {
+    const cls = "m" + (main.includes(d[0]) ? " main" : help.includes(d[0]) ? " help" : "");
+    s += shape(d, cls);
+  });
+  s += '<text x="50" y="196" text-anchor="middle">' + label + "</text></g>";
+  return s;
+}
+function bodyMap(name) {
+  const w = WORKS[name] || [[], []];
+  const words = w[0].concat(w[1]).map(k => NAMES[k].split(" (")[0]).join(", ");
+  return '<svg class="body-map" viewBox="0 0 205 200" role="img" aria-label="Muscles worked: ' + esc(words || "none") + '">' +
+    view(FRONT, w[0], w[1], 0, "Front") + view(BACK, w[0], w[1], 105, "Back") + "</svg>";
+}
+function muscleText(name) {
+  const w = WORKS[name];
+  if (!w) return "";
+  const short = k => NAMES[k].split(" (")[0];
+  let s = "";
+  if (w[0].length) s += "<b>Main:</b> " + w[0].map(short).join(", ");
+  if (w[1].length) s += (s ? " · " : "") + "Helps: " + w[1].map(short).join(", ");
+  return s;
+}
+
+const KEY = "vtaper4-next-day";
+function load() { try { const v = parseInt(localStorage.getItem(KEY), 10); return isNaN(v) ? 0 : v % DAYS.length; } catch (e) { return 0; } }
+function save(v) { try { localStorage.setItem(KEY, String(v)); } catch (e) {} }
+
+let next = load();
+let viewing = next;
+
+function searchUrl(name) {
+  return "https://www.youtube.com/results?search_query=" + encodeURIComponent(name + " form muscles worked animation");
+}
+function esc(s) { return s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+function render() {
+  const d = DAYS[next];
+  document.getElementById("todayName").innerHTML = "Day " + d.key + " <span>" + esc(d.name) + "</span>";
+  const strip = document.getElementById("strip");
+  strip.innerHTML = "";
+  DAYS.forEach((day, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-current", i === next ? "true" : "false");
+    b.setAttribute("aria-selected", i === viewing ? "true" : "false");
+    if (i === viewing) b.className = "viewing";
+    b.innerHTML = "<b>" + day.key + "</b>" + esc(day.name);
+    b.addEventListener("click", () => { viewing = i; render(); });
+    strip.appendChild(b);
+  });
+  const v = DAYS[viewing];
+  let html = '<div class="day"><div class="day-head"><h2>Day ' + v.key + ": " + esc(v.name) + '</h2><span class="targets">' + esc(v.targets) + "</span></div>";
+  if (v.tip) html += '<div class="vid-tip">' + esc(v.tip) + "</div>";
+  html += '<div class="legend"><span><i style="background:var(--m-main)"></i>Main muscle</span><span><i style="background:var(--m-help)"></i>Helps</span><span>Hover or tap a muscle for its name</span></div>';
+  v.ex.forEach(([name, dose, note]) => {
+    html += '<div class="ex"><div class="ex-text"><div class="ex-name">' + esc(name) + '</div><div class="ex-dose">' + esc(dose) + "</div>";
+    const mt = muscleText(name);
+    if (mt) html += '<div class="ex-muscles">' + mt + "</div>";
+    if (note) html += '<div class="ex-note">' + esc(note) + "</div>";
+    html += '<div class="ex-links">' + (videoFor(name) ? '<button type="button" class="tut-btn" data-tut="' + esc(name) + '" aria-pressed="false">Watch</button>' : "") +
+      '<a href="' + searchUrl(name) + '" target="_blank" rel="noopener">Find a demo</a></div></div>' + bodyMap(name) + "</div>";
+  });
+  html += '<p class="note">About 40 to 50 minutes. Sets × reps; "/side" means each arm or leg.</p></div>';
+  document.getElementById("dayCard").innerHTML = html;
+  document.querySelectorAll("#dayCard .tut-btn").forEach(b => b.addEventListener("click", () => openVideo(b.dataset.tut)));
+  markVideoButtons();
+  renderLog();
+}
+
+// ---- Workout log ----
+// One stored document per workout, id "<YYYY-MM-DD>_<day letter>", in the artifact's db
+// collection "workouts" (only the owner can read or write it). Falls back to this device's storage.
+const LOG_KEY = "vtaper-logs";
+const DRAFT_KEY = "vtaper-drafts";
+let logStore = null;       // db namespace, once the viewer grants it
+let logMode = "loading";   // "loading" | "db" | "local"
+let logs = {};
+const drafts = {};         // per day key: { date, sets: { exerciseName: [{reps, lb}] }, dirty }
+
+function pad(n) { return String(n).padStart(2, "0"); }
+function isoDate(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+function prettyDate(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+}
+function logId(date, key) { return date + "_" + key; }
+function loadLocalLogs() { try { return JSON.parse(localStorage.getItem(LOG_KEY)) || {}; } catch (e) { return {}; } }
+function saveLocalLogs() { try { localStorage.setItem(LOG_KEY, JSON.stringify(logs)); return true; } catch (e) { return false; } }
+function saveDrafts() { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(drafts)); } catch (e) {} }
+// Unsaved entries from today survive a reload; older ones are dropped
+(function loadDrafts() {
+  try {
+    const d = JSON.parse(localStorage.getItem(DRAFT_KEY)) || {};
+    const today = isoDate(new Date());
+    Object.keys(d).forEach(k => { if (d[k] && d[k].dirty && d[k].date === today) drafts[k] = d[k]; });
+  } catch (e) {}
+})();
+
+function draftFor(key) {
+  if (!drafts[key]) { drafts[key] = { date: isoDate(new Date()), sets: {}, dirty: false }; fillFromSaved(key); }
+  return drafts[key];
+}
+// Copy the saved workout for the draft's date into the form so it can be edited
+function fillFromSaved(key) {
+  const dr = drafts[key], saved = logs[logId(dr.date, key)];
+  dr.sets = {};
+  dr.steps = !!(saved && saved.steps);
+  dr.bw = saved && saved.bodyWeight != null ? String(saved.bodyWeight) : "";
+  dr.waist = saved && saved.waist != null ? String(saved.waist) : "";
+  if (saved && saved.entries) Object.keys(saved.entries).forEach(n => {
+    dr.sets[n] = saved.entries[n].sets.map(s => ({ reps: s.reps == null ? "" : String(s.reps), lb: s.lb == null ? "" : String(s.lb) }));
+  });
+  dr.dirty = false;
+}
+// Most recent saved weight or waist entry, and whether the weekly check is due
+function lastCheckText() {
+  const checks = Object.values(logs).filter(l => l.date && (l.bodyWeight != null || l.waist != null)).sort((a, b) => (a.date < b.date ? 1 : -1));
+  if (!checks.length) return "Once a week, same time of day. Measure your waist at the belly button.";
+  const c = checks[0];
+  const [y, m, d] = c.date.split("-").map(Number);
+  const days = Math.round((new Date().setHours(0, 0, 0, 0) - new Date(y, m - 1, d)) / 86400000);
+  const vals = [c.bodyWeight != null ? c.bodyWeight + " lb" : "", c.waist != null ? c.waist + " in" : ""].filter(Boolean).join(", ");
+  return (days >= 7 ? "Due today. " : "") + "Last check " + prettyDate(c.date) + ": " + vals + ".";
+}
+function storageLine() {
+  if (logMode === "db") return "Saved to your account, so it shows up on any device.";
+  if (logMode === "local") return "Saved in this browser on this device. Clearing your browser data erases the log.";
+  return "Connecting to your saved log...";
+}
+function setStatus(msg) {
+  const s = document.getElementById("logStatus");
+  if (s) { s.textContent = msg; s.dataset.msg = "1"; }
+}
+function setRowsHtml(i, arr) {
+  return arr.map((s, j) =>
+    '<div class="set-row"><span class="set-n">Set ' + (j + 1) + '</span>' +
+    '<label><input type="number" inputmode="numeric" min="0" max="999" id="reps-' + i + '-' + j + '" data-i="' + i + '" data-j="' + j + '" data-f="reps" value="' + esc(s.reps) + '" aria-label="Set ' + (j + 1) + ' reps">reps</label>' +
+    '<label><input type="number" inputmode="decimal" min="0" max="999" step="any" id="lb-' + i + '-' + j + '" data-i="' + i + '" data-j="' + j + '" data-f="lb" value="' + esc(s.lb) + '" aria-label="Set ' + (j + 1) + ' weight in pounds" placeholder="opt.">lb</label></div>'
+  ).join("");
+}
+function renderLog() {
+  const v = DAYS[viewing], dr = draftFor(v.key);
+  const saved = logs[logId(dr.date, v.key)];
+  let h = '<div class="modal-top"><div><div class="eyebrow">Log this workout</div><h3>Day ' + v.key + ": " + esc(v.name) + '</h3></div>' +
+    '<button type="button" class="drawer-close" id="logClose">Close</button></div>' +
+    '<label class="date-lab" for="logDate">Date <input type="date" id="logDate" value="' + dr.date + '"></label>' +
+    '<label class="date-lab" for="logSteps"><input type="checkbox" id="logSteps"' + (dr.steps ? " checked" : "") + '> Hit 7,000 steps</label>' +
+    '<div class="check-row"><span>Weekly check</span>' +
+    '<label><input type="number" inputmode="decimal" min="0" max="999" step="any" id="logWeight" value="' + esc(dr.bw || "") + '" aria-label="Body weight in pounds">lb</label>' +
+    '<label><input type="number" inputmode="decimal" min="0" max="99" step="any" id="logWaist" value="' + esc(dr.waist || "") + '" aria-label="Waist at the belly button in inches">in waist</label></div>' +
+    '<p class="note">' + esc(lastCheckText()) + "</p>" +
+    '<p class="note">' + (saved
+      ? "You already logged Day " + v.key + " on " + esc(prettyDate(dr.date)) + ". Saving again replaces it."
+      : "Type how many sets you did. A box opens for each set's reps. Weight is optional.") + "</p>";
+  v.ex.forEach(([name], i) => {
+    const arr = dr.sets[name] || [];
+    h += '<div class="log-ex"><div class="log-ex-top"><span class="log-name">' + esc(name) + '</span>' +
+      '<label class="sets-lab">Sets <input type="number" inputmode="numeric" min="0" max="10" id="sets-' + v.key + '-' + i + '" data-i="' + i + '" data-sets="1" value="' + (arr.length || "") + '" placeholder="0"></label></div>' +
+      '<div class="set-rows" id="rows-' + i + '">' + setRowsHtml(i, arr) + "</div></div>";
+  });
+  h += '<div class="log-actions"><button type="button" class="primary" id="saveNext">Save and move to next day</button><button type="button" id="saveOnly">Save only</button></div>' +
+    '<p class="note" id="logStatus" role="status">' + storageLine() + "</p>";
+  document.getElementById("logPanel").innerHTML = h;
+}
+
+const logPanel = document.getElementById("logPanel");
+logPanel.addEventListener("input", e => {
+  const t = e.target, v = DAYS[viewing], dr = draftFor(v.key);
+  const i = Number(t.dataset.i);
+  if (t.id === "logWeight" || t.id === "logWaist") {
+    dr[t.id === "logWeight" ? "bw" : "waist"] = t.value;
+    dr.dirty = true;
+    saveDrafts();
+    return;
+  }
+  if (t.id === "logDate" || t.id === "logSteps" || isNaN(i)) return;
+  const name = v.ex[i][0];
+  if (t.dataset.sets) {
+    // Grow or shrink the per-set rows; a new set copies the previous set's weight
+    let n = parseInt(t.value, 10);
+    n = isNaN(n) ? 0 : Math.max(0, Math.min(10, n));
+    const arr = dr.sets[name] || [];
+    while (arr.length < n) arr.push({ reps: "", lb: arr.length ? arr[arr.length - 1].lb : "" });
+    arr.length = n;
+    dr.sets[name] = arr;
+    document.getElementById("rows-" + i).innerHTML = setRowsHtml(i, arr);
+  } else {
+    dr.sets[name][Number(t.dataset.j)][t.dataset.f] = t.value;
+  }
+  dr.dirty = true;
+  saveDrafts();
+});
+logPanel.addEventListener("change", e => {
+  if (e.target.id === "logSteps") { draftFor(DAYS[viewing].key).steps = e.target.checked; draftFor(DAYS[viewing].key).dirty = true; saveDrafts(); return; }
+  if (e.target.id !== "logDate") return;
+  const key = DAYS[viewing].key, dr = draftFor(key);
+  dr.date = e.target.value || isoDate(new Date());
+  if (logs[logId(dr.date, key)]) fillFromSaved(key);
+  saveDrafts();
+  renderLog();
+});
+logPanel.addEventListener("click", e => {
+  if (e.target.id === "saveNext") saveWorkout(true);
+  else if (e.target.id === "saveOnly") saveWorkout(false);
+  else if (e.target.id === "logClose") document.getElementById("side").classList.remove("open");
+});
+document.getElementById("logFab").addEventListener("click", () => document.getElementById("side").classList.toggle("open"));
+
+async function saveWorkout(advance) {
+  const v = DAYS[viewing], dr = draftFor(v.key);
+  const entries = {};
+  v.ex.forEach(([name]) => {
+    const arr = (dr.sets[name] || []).map(s => ({ reps: s.reps === "" ? null : Number(s.reps), lb: s.lb === "" ? null : Number(s.lb) }));
+    if (arr.length) entries[name] = { sets: arr };
+  });
+  if (!Object.keys(entries).length) { setStatus("Enter the number of sets for at least one exercise first."); return; }
+  const doc = { date: dr.date, day: v.key, dayName: v.name, steps: !!dr.steps,
+    bodyWeight: dr.bw ? Number(dr.bw) : null, waist: dr.waist ? Number(dr.waist) : null, entries, savedAt: new Date().toISOString() };
+  const id = logId(dr.date, v.key);
+  const btns = logPanel.querySelectorAll(".log-actions button");
+  btns.forEach(b => { b.disabled = true; });
+  setStatus("Saving...");
+  try {
+    if (logStore) await logStore.collection("workouts").doc(id).set(doc);
+    else { logs[id] = doc; if (!saveLocalLogs()) throw new Error("storage blocked"); }
+  } catch (err) {
+    btns.forEach(b => { b.disabled = false; });
+    setStatus(err && err.code === "quota_exceeded" ? "Not saved: the log is full. Delete some old workouts in the calendar." : "Not saved. Check your connection and try again.");
+    return;
+  }
+  logs[id] = doc;
+  dr.dirty = false;
+  saveDrafts();
+  renderMonthCount();
+  if (calOpen) renderCalendar();
+  const when = prettyDate(dr.date);
+  if (advance) {
+    next = (viewing + 1) % DAYS.length;
+    viewing = next;
+    save(next);
+    render();
+    setStatus("Saved Day " + v.key + " for " + when + ". Next up: Day " + DAYS[next].key + ".");
+  } else {
+    renderLog();
+    setStatus("Saved Day " + v.key + " for " + when + ".");
+  }
+}
+
+function onLogsChanged() {
+  Object.keys(drafts).forEach(k => { if (!drafts[k].dirty) fillFromSaved(k); });
+  const cur = drafts[DAYS[viewing].key];
+  if (!cur || !cur.dirty) renderLog();
+  else { const s = document.getElementById("logStatus"); if (s && !s.dataset.msg) s.textContent = storageLine(); }
+  renderMonthCount();
+  if (calOpen) renderCalendar();
+}
+function useLocal() { logStore = null; logMode = "local"; logs = loadLocalLogs(); onLogsChanged(); }
+(async () => {
+  let ns = null;
+  try { ns = window.claude && window.claude.use ? await window.claude.use("db") : null; } catch (e) { ns = null; }
+  if (!ns) { useLocal(); return; }
+  logStore = ns;
+  ns.collection("workouts").onSnapshot(snap => {
+    const m = {};
+    snap.docs.forEach(d => { if (d.exists) m[d.id] = d.data(); });
+    logs = m;
+    logMode = "db";
+    onLogsChanged();
+  }, () => useLocal());
+})();
+
+function renderMonthCount() {
+  const el = document.getElementById("monthCount");
+  if (logMode === "loading") { el.textContent = ""; return; }
+  const t = new Date(), p = t.getFullYear() + "-" + pad(t.getMonth() + 1);
+  const n = new Set(Object.values(logs).filter(l => l.date && l.date.startsWith(p)).map(l => l.date)).size;
+  el.textContent = n + (n === 1 ? " workout day" : " workout days") + " logged this month. Open the calendar to see every session.";
+}
+
+// ---- Calendar ----
+function workoutsOn(iso) { return Object.values(logs).filter(l => l.date === iso).sort((a, b) => (a.day < b.day ? -1 : 1)); }
+function openCalendar() {
+  const t = new Date();
+  if (!calMonth) calMonth = { y: t.getFullYear(), m: t.getMonth() };
+  calOpen = true;
+  lastFocus = document.activeElement;
+  openModal('<button type="button" id="modalClose">Close</button>', "calTitle");
+  renderCalendar();
+  document.getElementById("modalClose").focus();
+}
+function renderCalendar(focusId) {
+  const { y, m } = calMonth;
+  const first = new Date(y, m, 1), days = new Date(y, m + 1, 0).getDate();
+  const today = isoDate(new Date()), prefix = y + "-" + pad(m + 1);
+  const all = Object.values(logs);
+  const monthDays = new Set(all.filter(l => l.date && l.date.startsWith(prefix)).map(l => l.date)).size;
+  let h = '<div class="modal-top"><div><div class="eyebrow">Workout history</div><h3 id="calTitle">' +
+    first.toLocaleDateString(undefined, { month: "long", year: "numeric" }) + '</h3></div><button type="button" id="modalClose">Close</button></div>' +
+    '<div class="cal-nav"><button type="button" id="calPrev">Prev</button><span class="note">' + monthDays + " workout days this month · " + all.length + ' logged in total</span><button type="button" id="calNext">Next</button></div>' +
+    '<div class="cal">' + ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => '<div class="cal-dow">' + d + "</div>").join("");
+  for (let i = 0; i < first.getDay(); i++) h += "<div></div>";
+  for (let d = 1; d <= days; d++) {
+    const iso = prefix + "-" + pad(d), ws = workoutsOn(iso);
+    h += '<button type="button" class="cal-day' + (ws.length ? " has" : "") + (iso === today ? " today" : "") + (iso === calPick ? " picked" : "") +
+      '" data-date="' + iso + '"' + (ws.length ? ' aria-label="' + esc(prettyDate(iso)) + ": Day " + ws.map(w => w.day).join(", ") + '"' : " disabled") +
+      "><span>" + d + "</span>" + ws.map(w => "<b>" + esc(w.day) + "</b>").join("") + "</button>";
+  }
+  h += "</div>";
+  const ws = calPick ? workoutsOn(calPick) : [];
+  if (ws.length) {
+    h += '<div class="cal-detail"><h4>' + esc(prettyDate(calPick)) + "</h4>" + ws.map(w => {
+      const id = logId(w.date, w.day);
+      const lines = Object.keys(w.entries || {}).map(n => {
+        const s = w.entries[n].sets;
+        const lbs = [...new Set(s.map(x => x.lb).filter(x => x != null))];
+        return "<li><b>" + esc(n) + "</b>: " + s.length + (s.length === 1 ? " set" : " sets") + " · reps " +
+          s.map(x => (x.reps == null ? "?" : x.reps)).join(", ") + (lbs.length ? " · " + lbs.join(" / ") + " lb" : "") + "</li>";
+      }).join("");
+      return '<div class="cal-w"><div class="ex-name">Day ' + esc(w.day) + ": " + esc(w.dayName || "") + "</div><ul>" + lines + (w.steps ? "<li>Hit 7,000 steps</li>" : "") +
+        (w.bodyWeight != null || w.waist != null ? "<li>Weekly check: " + [w.bodyWeight != null ? w.bodyWeight + " lb" : "", w.waist != null ? w.waist + " in waist" : ""].filter(Boolean).join(", ") + "</li>" : "") + "</ul>" +
+        '<div class="btns"><button type="button" data-edit="' + id + '">Edit</button><button type="button" data-del="' + id + '">Delete</button></div></div>';
+    }).join("") + "</div>";
+  } else {
+    h += '<p class="note">Highlighted days have a saved workout; the letter is which day of the rotation you did. Tap one to see sets and reps.</p>';
+  }
+  document.getElementById("modal").innerHTML = h;
+  if (focusId) { const f = document.getElementById(focusId) || document.querySelector('#modal [data-date="' + focusId + '"]'); if (f) f.focus(); }
+}
+function onModalClick(e) {
+  const b = e.target.closest("button");
+  if (!b) return;
+  if (b.id === "modalClose") { closeModal(); return; }
+  if (b.dataset.swap) { swapVideo(b); return; }
+  if (b.id === "calPrev" || b.id === "calNext") {
+    let { y, m } = calMonth;
+    m += b.id === "calNext" ? 1 : -1;
+    if (m < 0) { m = 11; y--; }
+    if (m > 11) { m = 0; y++; }
+    calMonth = { y, m };
+    calPick = null;
+    renderCalendar(b.id);
+  } else if (b.dataset.date) {
+    calPick = b.dataset.date;
+    renderCalendar(b.dataset.date);
+  } else if (b.dataset.edit) {
+    editWorkout(b.dataset.edit);
+  } else if (b.dataset.del) {
+    if (b.dataset.armed) deleteWorkout(b.dataset.del);
+    else { b.dataset.armed = "1"; b.textContent = "Tap again to delete"; }
+  }
+}
+function editWorkout(id) {
+  const w = logs[id];
+  const i = w ? DAYS.findIndex(d => d.key === w.day) : -1;
+  if (i < 0) return;
+  closeModal();
+  viewing = i;
+  const dr = draftFor(w.day);
+  dr.date = w.date;
+  fillFromSaved(w.day);
+  render();
+  if (!wide.matches) document.getElementById("side").classList.add("open");
+  else document.getElementById("dayArea").scrollIntoView({ block: "start" });
+  document.getElementById("logDate").focus();
+}
+async function deleteWorkout(id) {
+  try {
+    if (logStore) await logStore.collection("workouts").doc(id).delete();
+    delete logs[id];
+    if (!logStore) saveLocalLogs();
+  } catch (err) {
+    const d = document.querySelector("#modal .cal-detail");
+    if (d) d.insertAdjacentHTML("beforeend", '<p class="warn">Could not delete it. Check your connection and try again.</p>');
+    return;
+  }
+  Object.keys(drafts).forEach(k => { if (!drafts[k].dirty) fillFromSaved(k); });
+  renderCalendar();
+  renderLog();
+  renderMonthCount();
+}
+document.getElementById("calBtn").addEventListener("click", openCalendar);
+
+document.getElementById("doneBtn").addEventListener("click", () => { next = (next + 1) % DAYS.length; viewing = next; save(next); render(); });
+document.getElementById("backBtn").addEventListener("click", () => { next = (next + DAYS.length - 1) % DAYS.length; viewing = next; save(next); render(); });
+render();
+</script>
+
+</body></html>
